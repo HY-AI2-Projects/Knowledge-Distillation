@@ -26,11 +26,18 @@ Knowledge Distillation 에는 Teacher Model과 Student Model이 필요합니다.
 선생님이 학생에게 가르침을 통해 지식을 주는 것 처럼 **잘 학습된 Teacher Model의 지식을 Student Model에게 전달하여 비슷한 성능을 내고자 하는 것이 Knowledge Distillaion의 목적입니다.**
 
 ![스크린샷 2023-12-13 001529](https://github.com/bae60/AI/assets/146174793/2d23749e-8045-4277-82b6-04f278b26baf) 
+<p align="center">
+[그림1]
+</p>
 
-위의 예시처럼 정확도 95%, 추론시간 2시간인 Teacher Model이 있다고 가정해보겠습니다. 이 잘 학습시킨 Teacher Model의 지식을 단순한 Student Model에게 전달하여 정확도 90%, 추론시간 5분의 성능을 내도록 하는 것입니다.
+
+위의 그림처럼 정확도 95%, 추론시간 2시간인 Teacher Model이 있다고 가정해보겠습니다. 이 잘 학습시킨 Teacher Model의 지식을 단순한 Student Model에게 전달하여 정확도 90%, 추론시간 5분의 성능을 내도록 하는 것입니다.
 
 ## Knowledge Distillaion 적용 과정
 ![image](https://github.com/bae60/AI/assets/146174793/f5d80690-9871-49c8-95f5-aa2707189f89)
+<p align="center">
+[그림2]
+</p>
 
 **1) Soft Target**
 
@@ -159,7 +166,9 @@ teacher = Teacher().to(device)
 output = teacher(x)
 print(output.shape)
 ```
+<p align="center">
 torch.Size([16, 10])
+</p>
 
 
 
@@ -374,7 +383,9 @@ student = Student().to(device)
 output = student(x)
 print(output.shape)
 ```
+<p align="center">
 torch.Size([16, 10])
+</p>
 
 
 가중치를 초기화합니다.
@@ -509,4 +520,11 @@ plt.show()
 ![download](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/c12d6fe6-0d2d-4a77-848a-e871e456c1e4)
 ![download](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/c5ea590a-bb97-4716-bb5b-fab9cd31b2b8)
 
+## 결론
+* 큰 모델의 지식을 작은 네트워크에 전달 할 수 있는 방법이 Knowledge distillation입니다.
+* Knowledge distillation 구현코드를 실행해보며 실제 딥러닝 서비스에서 유용하게 활용될 수 있음을 알았습니다.
 
+## 참고자료
+* [Knowledge distillation 논문](https://ffighting.net/deep-learning-paper-review/deep-learning-paper-guide/deep-learning-paper-guide/#Knowledge_Distillation)
+* [그림1](https://velog.io/@dldydldy75)
+* [그림2](https://intellabs.github.io/distiller/knowledge_distillation.html)
