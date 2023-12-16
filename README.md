@@ -63,7 +63,7 @@ Knowledge Distillation 에는 Teacher Model과 Student Model이 필요합니다.
 이 두가지 손실의 합을 최종 손실로 삼아 학습합니다.
 
 ## Knowledge Distillation 논문구현
-본 코드는 https://github.com/Seonghoon-Yu/AI_Paper_Review/blob/master/Classification/Knowledge_distillation(2014).ipynb 의 코드를 참고하였습니다.
+본 코드는 https://github.com/Seonghoon-Yu/AI_Paper_Review/blob/master/Classification/Knowledge_distillation(2014).ipynb 의 코드입니다.
 
 ### 우선 필요한 라이브러리를 import 합니다.
 ```
