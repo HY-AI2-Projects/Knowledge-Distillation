@@ -318,7 +318,168 @@ createFolder('./models')
 ```
 teacher, loss_hist, metric_hist = train_val(teacher, params_train)
 ```
+![스크린샷 2023-12-16 193447](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/9e867c25-a9fb-4b55-aa44-a36899e815d8)
 
+loss와 accuracy를 시각화합니다.
+```
+num_epochs = params_train['num_epochs']
+
+# Plot train-val loss
+plt.title('Train-Val Loss')
+plt.plot(range(1, num_epochs+1), loss_hist['train'], label='train')
+plt.plot(range(1, num_epochs+1), loss_hist['val'], label='val')
+plt.ylabel('Loss')
+plt.xlabel('Training Epochs')
+plt.legend()
+plt.show()
+
+# plot train-val accuracy
+plt.title('Train-Val Accuracy')
+plt.plot(range(1, num_epochs+1), metric_hist['train'], label='train')
+plt.plot(range(1, num_epochs+1), metric_hist['val'], label='val')
+plt.ylabel('Accuracy')
+plt.xlabel('Training Epochs')
+plt.legend()
+plt.show()
+```
+![download](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/84c62a86-9826-422e-9fd8-b40bc2c65c5b)
+![download](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/7d110750-68f2-44a3-b19f-13bd6ac7a52d)
+
+### Define Student model
+이제 teacher의 지식을 transfer할 student model을 정의합니다.
+```
+class Student(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(28*28, 800)
+        self.bn1 = nn.BatchNorm1d(800)
+        self.fc2 = nn.Linear(800,800)
+        self.bn2 = nn.BatchNorm1d(800)
+        self.fc3 = nn.Linear(800,10)
+
+    def forward(self, x):
+        x = x.view(-1, 28*28)
+        x = F.relu(self.bn1(self.fc1(x)))
+        x = F.relu(self.bn2(self.fc2(x)))
+        x = self.fc3(x)
+        return x
+```
+
+```
+# check
+x = torch.randn(16,1,28,28).to(device)
+student = Student().to(device)
+output = student(x)
+print(output.shape)
+```
+torch.Size([16, 10])
+
+
+가중치를 초기화합니다.
+```
+# weight initialization
+def initialize_weights(model):
+    classname = model.__class__.__name__
+    # fc layer
+    if classname.find('Linear') != -1:
+        nn.init.normal_(model.weight.data, 0.0, 0.02)
+        nn.init.constant_(model.bias.data, 0)
+    # batchnorm
+    elif classname.find('BatchNorm') != -1:
+        nn.init.normal_(model.weight.data, 1.0, 0.02)
+        nn.init.constant_(model.bias.data, 0)
+
+student.apply(initialize_weights);
+```
+
+### Knowledge distillation
+이제 앞서 설명드린 teacher model의 soft label을 사용하여 student model을 knowledge distillation loss로 학습합니다.
+```
+teacher = Teacher().to(device)
+# load weight
+teacher.load_state_dict(torch.load('/content/models/teacher_weights.pt'))
+
+student = Student().to(device)
+
+# optimizer
+opt = optim.Adam(student.parameters())
+```
+
+```
+# knowledge distillation loss
+def distillation(y, labels, teacher_scores, T, alpha):
+    # distillation loss + classification loss
+    # y: student
+    # labels: hard label
+    # teacher_scores: soft label
+    return nn.KLDivLoss()(F.log_softmax(y/T), F.softmax(teacher_scores/T)) * (T*T * 2.0 + alpha) + F.cross_entropy(y,labels) * (1.-alpha)
+
+# val loss
+loss_func = nn.CrossEntropyLoss()
+```
+
+```
+def distill_loss_batch(output, target, teacher_output, loss_fn=distillation, opt=opt):
+    loss_b = loss_fn(output, target, teacher_output, T=20.0, alpha=0.7)
+    metric_b = metric_batch(output, target)
+
+    if opt is not None:
+        opt.zero_grad()
+        loss_b.backward()
+        opt.step()
+
+    return loss_b.item(), metric_b
+```
+
+100epoch 학습하겠습니다.
+```
+num_epochs= 100
+
+loss_history = {'train': [], 'val': []}
+metric_history = {'train': [], 'val': []}
+
+best_loss = float('inf')
+start_time = time.time()
+
+for epoch in range(num_epochs):
+    current_lr = get_lr(opt)
+    print('Epoch {}/{}, current lr= {}'.format(epoch, num_epochs-1, current_lr))
+
+    # train
+    student.train()
+
+    running_loss = 0.0
+    running_metric = 0.0
+    len_data = len(train_dl.dataset)
+
+    for xb, yb in train_dl:
+        xb = xb.to(device)
+        yb = yb.to(device)
+
+        output = student(xb)
+        teacher_output = teacher(xb).detach()
+        loss_b, metric_b = distill_loss_batch(output, yb, teacher_output, loss_fn=distillation, opt=opt)
+        running_loss += loss_b
+        running_metric_b = metric_b
+    train_loss = running_loss / len_data
+    train_metric = running_metric / len_data
+
+    loss_history['train'].append(train_loss)
+    metric_history['train'].append(train_metric)
+
+    # validation
+    student.eval()
+    with torch.no_grad():
+        val_loss, val_metric = loss_epoch(student, loss_func, val_dl)
+    loss_history['val'].append(val_loss)
+    metric_history['val'].append(val_metric)
+
+
+    lr_scheduler.step(val_loss)
+
+    print('train loss: %.6f, val loss: %.6f, accuracy: %.2f, time: %.4f min' %(train_loss, val_loss, 100*val_metric, (time.time()-start_time)/60))
+    print('-'*10)
+```
 
 
 
