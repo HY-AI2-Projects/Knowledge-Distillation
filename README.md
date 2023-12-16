@@ -330,7 +330,7 @@ createFolder('./models')
 teacher, loss_hist, metric_hist = train_val(teacher, params_train)
 ```
 ![스크린샷 2023-12-16 193447](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/9e867c25-a9fb-4b55-aa44-a36899e815d8)
-#### teacher model의 accuracy 96.3 나왔습니다.
+**teacher model의 accuracy 96.3 나왔습니다.**
 
 
 loss와 accuracy를 시각화합니다.
@@ -497,7 +497,7 @@ for epoch in range(num_epochs):
 ```
 ![스크린샷 2023-12-16 200619](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/37505b5d-fd16-41d8-a490-928adc691186)
 
-#### teacher model보다 accuracy가 1.88% 향상되었습니다 !
+**teacher model보다 accuracy가 1.88% 향상되었습니다 !**
 
 loss와 accuracy를 시각화합니다.
 ```
