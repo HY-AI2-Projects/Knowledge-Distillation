@@ -522,7 +522,8 @@ plt.show()
 
 ## 결론
 * 큰 모델의 지식을 작은 네트워크에 전달 할 수 있는 방법이 Knowledge distillation입니다.
-* Knowledge distillation 구현코드를 실행해보며 실제 딥러닝 서비스에서 유용하게 활용될 수 있음을 알았습니다.
+* Knowledge distillation 구현코드를 실행해보며 정확도가 향상되는 것을 확인해보니, 실제 딥러닝 서비스에서 유용하게 활용될 수 있음을 알았습니다.
+* 모델 경량화의 중요성을 알게되었습니다.
 
 ## 참고자료
 * [Knowledge distillation 논문](https://ffighting.net/deep-learning-paper-review/deep-learning-paper-guide/deep-learning-paper-guide/#Knowledge_Distillation)
