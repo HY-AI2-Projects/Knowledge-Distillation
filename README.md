@@ -319,6 +319,8 @@ createFolder('./models')
 teacher, loss_hist, metric_hist = train_val(teacher, params_train)
 ```
 ![스크린샷 2023-12-16 193447](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/9e867c25-a9fb-4b55-aa44-a36899e815d8)
+#### teacher model의 accuracy 96.3 나왔습니다.
+
 
 loss와 accuracy를 시각화합니다.
 ```
@@ -480,7 +482,31 @@ for epoch in range(num_epochs):
     print('train loss: %.6f, val loss: %.6f, accuracy: %.2f, time: %.4f min' %(train_loss, val_loss, 100*val_metric, (time.time()-start_time)/60))
     print('-'*10)
 ```
+![스크린샷 2023-12-16 200619](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/37505b5d-fd16-41d8-a490-928adc691186)
 
+#### teacher model보다 accuracy가 1.88% 향상되었습니다 !
 
+loss와 accuracy를 시각화합니다.
+```
+# Plot train-val loss
+plt.title('Train-Val Loss')
+plt.plot(range(1, num_epochs+1), loss_hist['train'], label='train')
+plt.plot(range(1, num_epochs+1), loss_hist['val'], label='val')
+plt.ylabel('Loss')
+plt.xlabel('Training Epochs')
+plt.legend()
+plt.show()
+
+# plot train-val accuracy
+plt.title('Train-Val Accuracy')
+plt.plot(range(1, num_epochs+1), metric_hist['train'], label='train')
+plt.plot(range(1, num_epochs+1), metric_hist['val'], label='val')
+plt.ylabel('Accuracy')
+plt.xlabel('Training Epochs')
+plt.legend()
+plt.show()
+```
+![download](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/c12d6fe6-0d2d-4a77-848a-e871e456c1e4)
+![download](https://github.com/HY-AI2-Projects/Knowledge-Distillation/assets/146174793/c5ea590a-bb97-4716-bb5b-fab9cd31b2b8)
 
 
